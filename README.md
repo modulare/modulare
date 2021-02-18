@@ -1,5 +1,5 @@
 ### Hi there 👋
-## I am a programmer who would especially like to have fun making small pieces of good ideas (if I have them!)
+#### I am a programmer who would especially like to have fun making small pieces of good ideas (if I have them!)
 <!--
 **modulare/modulare** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
