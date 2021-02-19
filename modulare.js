@@ -1,14 +1,13 @@
 let marg = 50;
 let ini_rnd = 0;
 let end_rnd = 1;
-let orX = width / 2;
-let orY = height / 2;
+let orX;
+let orY;
+
 function setup() {
   createCanvas(600, 600);
-  /*
-  per prova GitHub
-  */
-  //noLoop();
+  let orX = width / 2;
+  let orY = height / 2;
   this.sni = [];
   
   for (let i = 0; i < 1; i++) {
