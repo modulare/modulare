@@ -1,7 +1,8 @@
 let marg = 50;
 let ini_rnd = 0;
 let end_rnd = 1;
-
+let orX = width / 2;
+let orY = height / 2;
 function setup() {
   createCanvas(600, 600);
   /*
@@ -9,17 +10,13 @@ function setup() {
   */
   //noLoop();
   this.sni = [];
-
+  
   for (let i = 0; i < 1; i++) {
-    //note that "ceil(random(1, 2))" is always = 2...
-    //...but i love "ceil (random (something, something else))"  :-)
-    //...and of course it is useful if you want to start with 
-    //a model other than number 2 
-    this.sni.push(
-      new snip(i.toString(),
-        width / 2, height / 2,
-        new body(ceil(random(1, 2))),
-        random(40, 100), createVector(random(-1, 1), random(-1, 1))));
+	  let kind = ceil(random(0, 2))
+	  let vX =random(-1, 1);
+	  let vY =random(-1, 1);
+      this.sni.push(new snip(i.toString(), orX, orY, new body(kind),  
+	  random(40, 100), createVector(vX, vY)));
   }
 }
 
@@ -59,12 +56,12 @@ function draw() {
 
 class snip {
 
-  constructor(name, x, y, bod, view, vel) {
+  constructor(name, x, y, bod, range_, vel) {
     this.name = name;
     this.x = x;
     this.y = y;
     this.bod = bod;
-    this.view = view;
+    this.range_ = range_;
     this.vel = vel;
     this.onBorders = false;
   }
@@ -79,30 +76,30 @@ class snip {
   borders() {
     let k = 0;
     this.onBorders = true;
-    if (this.y - this.view / 2 < marg) {
-      if (this.y < marg - this.view / 2) {
-        this.y = height - marg - this.view / 2;
+    if (this.y - this.range_ / 2 < marg) {
+      if (this.y < marg - this.range_ / 2) {
+        this.y = height - marg - this.range_ / 2;
       }
       k = 1;
       this.display(this.x, this.y + (height - 2 * marg));
     }
-    if (this.y + this.view / 2 > height - marg) {
-      if (this.y > height - marg + this.view / 2) {
-        this.y = marg + this.view / 2;
+    if (this.y + this.range_ / 2 > height - marg) {
+      if (this.y > height - marg + this.range_ / 2) {
+        this.y = marg + this.range_ / 2;
       }
       k += 3;
       this.display(this.x, this.y - (height - 2 * marg));
     }
-    if (this.x - this.view / 2 < marg) {
-      if (this.x < marg - this.view / 2) {
-        this.x = width - marg - this.view / 2;
+    if (this.x - this.range_ / 2 < marg) {
+      if (this.x < marg - this.range_ / 2) {
+        this.x = width - marg - this.range_ / 2;
       }
       k += 50;
       this.display(this.x + (width - 2 * marg), this.y);
     }
-    if (this.x + this.view / 2 > width - marg) {
-      if (this.x > width - marg + this.view / 2) {
-        this.x = marg + this.view / 2;
+    if (this.x + this.range_ / 2 > width - marg) {
+      if (this.x > width - marg + this.range_ / 2) {
+        this.x = marg + this.range_ / 2;
       }
       k += 70;
       //this.display(this.x - (width - 2 * marg), this.y);
@@ -154,7 +151,7 @@ class body {
         translate(x, y);
         //area di visuale dello snip
         fill(this.r, this.g, this.b, 100);
-        ellipse(0, 0, 100); // this.view !!!!!!!!!!
+        ellipse(0, 0, 100); // this.range_ !!!!!!!!!!
         //nucleo snip
         fill(this.b, this.r, this.g, 100);
         ellipse(0, 0, 16);
