@@ -1,15 +1,20 @@
-let marg = 0;
+let marg = 50;
 let ini_rnd = 0;
 let end_rnd = 1;
 
 function setup() {
   createCanvas(600, 600);
+  /*
+  per prova GitHub
+  */
   //noLoop();
   this.sni = [];
 
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 1; i++) {
     //note that "ceil(random(1, 2))" is always = 2...
-    //...but i love "ceil (random (something, something else))" :-)
+    //...but i love "ceil (random (something, something else))"  :-)
+    //...and of course it is useful if you want to start with 
+    //a model other than number 2 
     this.sni.push(
       new snip(i.toString(),
         width / 2, height / 2,
@@ -20,6 +25,7 @@ function setup() {
 
 function draw() {
   background(255, 255, 255, 4);
+  /*
   if (frameCount == 800) {
     for (let i = 0; i < 8; i++) {
       this.sni[i].bod.type = 1;
@@ -31,19 +37,21 @@ function draw() {
       this.sni[i].bod.type = 0;
     }
   }
-
-  if (frameCount == 2000) {
+  
+   if (frameCount == 2000) {
     for (let i = 0; i < 25; i++) {
       this.sni[i].bod.type = 2;
     }
   }
-
+*/
+  this.sni[0].bod.type = 1; //                                    SOLO PER TEST
   //print("------");
   for (const s of this.sni) {
     s.move();
     s.display(s.x, s.y);
     //print(s.x,s.y);
   }
+
   noFill();
   stroke(0);
   rect(marg, marg, width - 2 * marg, height - 2 * marg);
@@ -58,6 +66,7 @@ class snip {
     this.bod = bod;
     this.view = view;
     this.vel = vel;
+    this.crossing = false;
   }
 
   move() {
@@ -69,6 +78,7 @@ class snip {
 
   borders() {
     let k = 0;
+    this.crossing = true;
     if (this.y - this.view / 2 < marg) {
       if (this.y < marg - this.view / 2) {
         this.y = height - marg - this.view / 2;
@@ -113,15 +123,13 @@ class snip {
         this.display(this.x + (width - 2 * marg), this.y - (height - 2 * marg));
         break;
       default:
-        //console.log(`bad`);
+        this.crossing = false;
     }
   }
 
   display(x, y) {
-    this.bod.display(x, y);
-    //text(this.name,x,y);
+    this.bod.display(x, y,this.crossing);
     stroke(1);
-    //text(this.name, x, y);
   }
 }
 
@@ -136,7 +144,7 @@ class body {
   getType(type) {
     this.type = type;
   }
-  display(x, y) {
+  display(x, y,crossing) {
     //print(this.type);
     switch (this.type) {
       case 0:
@@ -155,8 +163,12 @@ class body {
         stroke(this.r, this.g, this.b);
         this.rot += 0.8;
         push();
-        translate(x, y);
-        rotate(radians(this.rot));
+        //print(crossing);
+        if (crossing == false) {
+          //print("------2");
+          translate(x, y);
+          rotate(radians(this.rot));
+        }
         beginShape();
         vertex(0 - 32, 60 - 32);
         vertex(15 - 32, 15 - 32);
