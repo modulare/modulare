@@ -9,13 +9,12 @@ function setup() {
   let orX = width / 2;
   let orY = height / 2;
   this.sni = [];
-  
+
   for (let i = 0; i < 1; i++) {
-	  let kind = ceil(random(0, 2))
-	  let vX =random(-1, 1);
-	  let vY =random(-1, 1);
-      this.sni.push(new snip(i.toString(), orX, orY, new body(kind),  
-	  random(40, 100), createVector(vX, vY)));
+    let kind = ceil(random(0, 2))
+    let vX = random(-1, 1);
+    let vY = random(-1, 1);
+    this.sni.push(new snip(i.toString(), orX, orY, new body(kind), createVector(vX, vY)));
   }
 }
 
@@ -40,7 +39,7 @@ function draw() {
     }
   }
 */
-  this.sni[0].bod.type = 1; //                                    SOLO PER TEST
+  this.sni[0].bod.type = 0; //                                    SOLO PER TEST
   //print("------");
   for (const s of this.sni) {
     s.move();
@@ -55,12 +54,12 @@ function draw() {
 
 class snip {
 
-  constructor(name, x, y, bod, range_, vel) {
+  constructor(name, x, y, bod, vel) {
     this.name = name;
     this.x = x;
     this.y = y;
     this.bod = bod;
-    this.range_ = range_;
+    this.range_ = bod.range_;
     this.vel = vel;
     this.onBorders = false;
   }
@@ -125,7 +124,7 @@ class snip {
   }
 
   display(x, y) {
-    this.bod.display(x, y,this.onBorders);
+    this.bod.display(x, y, this.onBorders);
     stroke(1);
   }
 }
@@ -137,14 +136,30 @@ class body {
     this.r = random(0, 255);
     this.g = random(0, 255);
     this.b = random(0, 255);
+    this.set_range_(type);
+    
   }
   getType(type) {
     this.type = type;
   }
-  display(x, y,onBorders) {
+
+  set_range_(type) {
+    switch (this.type) {
+      case 0:
+        this.range_ = 100;
+      case 1:
+        this.range_ = 100;
+      case 2:
+        this.range_ = 100;
+      default:
+        //
+    }
+  }
+  display(x, y, onBorders) {
     //print(this.type);
     switch (this.type) {
       case 0:
+        this.range_ = 100;
         noStroke();
         push();
         translate(x, y);
@@ -157,6 +172,7 @@ class body {
         pop();
         break;
       case 1:
+        this.range_ = 100;
         stroke(this.r, this.g, this.b);
         this.rot += 0.8;
         push();
@@ -180,6 +196,7 @@ class body {
         pop();
         break;
       case 2:
+        this.range_ = 100;
         stroke(1);
         this.rot += 0.8;
         push();
