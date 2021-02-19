@@ -159,7 +159,6 @@ class body {
     //print(this.type);
     switch (this.type) {
       case 0:
-        this.range_ = 100;
         noStroke();
         push();
         translate(x, y);
@@ -172,7 +171,6 @@ class body {
         pop();
         break;
       case 1:
-        this.range_ = 100;
         stroke(this.r, this.g, this.b);
         this.rot += 0.8;
         push();
@@ -196,7 +194,6 @@ class body {
         pop();
         break;
       case 2:
-        this.range_ = 100;
         stroke(1);
         this.rot += 0.8;
         push();
