@@ -15,7 +15,8 @@ function setup() {
         let kind = ceil(random(0, 2))
         let vX = random(-1, 1);
         let vY = random(-1, 1);
-        this.sni.push(new snip(i.toString(), orX, orY, new body(kind), createVector(vX, vY)));
+        let rot = 0.8;
+        this.sni.push(new snip(i.toString(), orX, orY, new body(kind), createVector(vX, vY),rot));
     }
 }
 
@@ -48,7 +49,7 @@ function draw() {
     //print("------");
     for (const s of this.sni) {
         s.move();
-        s.bod.displayPrincipale(s.x, s.y);
+        s.bod.display(s.x, s.y,s.rot);
         s.borders();
         //print(s.x,s.y);
     }
@@ -60,10 +61,12 @@ function draw() {
 
 class snip {
 
-    constructor(name, x, y, bod, vel) {
+    constructor(name, x, y, bod, vel,vel_rot) {
         this.name = name;
         this.x = x;
         this.y = y;
+        this.rot = vel_rot;
+        this.vel_rot=vel_rot;
         this.bod = bod;
         this.range_ = bod.range_;
         print(this.range_);
@@ -75,7 +78,7 @@ class snip {
     move() {
         this.x += this.vel.x;
         this.y += this.vel.y;
-        //this.borders();
+        this.rot += this.vel_rot;
     }
 
     borders() {
@@ -86,56 +89,59 @@ class snip {
                 this.y = height - marg - this.range_ / 2;
             }
             k = 1;
-            this.display(this.x, this.y + (height - 2 * marg));
+            this.bod.display(this.x, this.y + (height - 2 * marg),this.rot);
+            this.displayRange(this.x, this.y + (height - 2 * marg));
         }
         if (this.y + this.range_ / 2 > height - marg) {
             if (this.y > height - marg + this.range_ / 2) {
                 this.y = marg + this.range_ / 2;
             }
             k += 3;
-            this.display(this.x, this.y - (height - 2 * marg));
+            this.bod.display(this.x, this.y - (height - 2 * marg),this.rot);
+            this.displayRange(this.x, this.y - (height - 2 * marg));
         }
         if (this.x - this.range_ / 2 < marg) {
             if (this.x < marg - this.range_ / 2) {
                 this.x = width - marg - this.range_ / 2;
             }
             k += 50;
-            this.display(this.x + (width - 2 * marg), this.y);
+            this.bod.display(this.x + (width - 2 * marg), this.y,this.rot);
+            this.displayRange(this.x + (width - 2 * marg), this.y);
         }
         if (this.x + this.range_ / 2 > width - marg) {
             if (this.x > width - marg + this.range_ / 2) {
                 this.x = marg + this.range_ / 2;
             }
             k += 70;
-            //this.display(this.x - (width - 2 * marg), this.y);
-            this.display(this.x - (width - 2 * marg), this.y);
+            this.bod.display(this.x - (width - 2 * marg), this.y,this.rot);
+            this.displayRange(this.x - (width - 2 * marg), this.y);
         }
         //BOOKMARK: SWITCH K BORDERS 71 73 51 ....
         switch (k) {
             case 71:
-                this.display(this.x - (width - 2 * marg),
-                    this.y + (height - 2 * marg));
+                this.bod.display(this.x - (width - 2 * marg), this.y + (height - 2 * marg),this.rot);
+                    this.displayRange(this.x - (width - 2 * marg), this.y + (height - 2 * marg));
                 break;
             case 73:
-                this.display(this.x - (width - 2 * marg), this.y - (height - 2 * marg));
+                this.bod.display(this.x - (width - 2 * marg), this.y - (height - 2 * marg),this.rot);
+                this.displayRange(this.x - (width - 2 * marg), this.y - (height - 2 * marg));
                 break;
             case 51:
-                this.display(this.x + (width - 2 * marg), this.y + (height - 2 * marg));
+                this.bod.display(this.x + (width - 2 * marg), this.y + (height - 2 * marg),this.rot);
+                this.displayRange(this.x + (width - 2 * marg), this.y + (height - 2 * marg));
                 break;
             case 53:
-                this.display(this.x + (width - 2 * marg), this.y - (height - 2 * marg));
+                this.bod.display(this.x + (width - 2 * marg), this.y - (height - 2 * marg),this.rot);
+                this.displayRange(this.x + (width - 2 * marg), this.y - (height - 2 * marg));
                 break;
             default:
                 this.onBorders = false;
         }
     }
 
-    display(x, y) {
-        ellipse(x, y, 18, 8);
+    displayRange(x, y) {
+        ellipse(x, y, 8);
         rect(x - this.bod.range_ / 2, y - this.bod.range_ / 2, this.range_);
-        //QUI SNIP CHIAMA this.bod.display
-        //BOOKMARK: QUI  SI PUO' AGGIUNGERE RECT RA
-        this.bod.display(x, y);
         stroke(1);
     }
 }
@@ -166,34 +172,8 @@ class body {
             //
         }
     }
-    displayPrincipale(x, y) {
-        //print(this.type);
-        //BOOKMARK: SWITCH DISPLAY PER TIPO
-
-        stroke(this.r, this.g, this.b);
-        push();
-        //if (onBorders == false) {
-        //print("------2");
-
-        translate(x, y);
-        this.rot += 0.8;
-        rotate(radians(this.rot));
-        //}
-        beginShape();
-        vertex(-32, 28);
-        vertex(-17, -17);
-        vertex(28, -32);
-        vertex(-17, -47);
-        vertex(-32, -92);
-        vertex(-47, -47);
-        vertex(-92, -32);
-        vertex(-47, -17);
-        endShape(CLOSE);
-        ellipse(0, 0, 10)
-        pop();
-    }
-
-    display(x, y) {
+    
+    display(x, y,rot) {
         //print(this.type);
         //BOOKMARK: SWITCH DISPLAY PER TIPO
         switch (this.type) {
@@ -212,14 +192,8 @@ class body {
             case 1:
                 stroke(this.r, this.g, this.b);
                 push();
-                //if (onBorders == false) {
-                //print("------2");
-
                 translate(x, y);
-                //this.rot += 0.8;
-                rotate(radians(this.rot));
-                //rotate(radians(this.rot));
-                //}
+                rotate(radians(rot));
                 beginShape();
                 vertex(-32, 28);
                 vertex(-17, -17);
