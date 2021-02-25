@@ -1,3 +1,4 @@
+//ok
 let marg = 50;
 let ini_rnd = 0;
 let end_rnd = 1;
@@ -5,22 +6,25 @@ let orX;
 let orY;
 
 function setup() {
-  createCanvas(600, 600);
-  let orX = width / 2;
-  let orY = height / 2;
-  this.sni = [];
+    createCanvas(600, 600);
+    let orX = width / 2;
+    let orY = height / 2;
+    this.sni = [];
 
-  for (let i = 0; i < 1; i++) {
-    let kind = ceil(random(0, 2))
-    let vX = random(-1, 1);
-    let vY = random(-1, 1);
-    this.sni.push(new snip(i.toString(), orX, orY, new body(kind), createVector(vX, vY)));
-  }
+    for (let i = 0; i < 1; i++) {
+        let kind = ceil(random(0, 2))
+        let vX = random(-1, 1);
+        let vY = random(-1, 1);
+        this.sni.push(new snip(i.toString(), orX, orY, new body(kind), createVector(vX, vY)));
+    }
 }
 
 function draw() {
-  background(255, 255, 255, 25);
-  /*
+    //TODO: DEFINIRE IL RANGE DI OGNI BODY
+    //TODO: CONTROLLARE SE ATTRAVERSA IL BORDO NON AGGIUNGERE VELOCITA' E ROTAZIONE
+    //TODO: inherit di body
+    background(255, 255, 255, 25);
+    /*
   if (frameCount == 800) {
     for (let i = 0; i < 8; i++) {
       this.sni[i].bod.type = 1;
@@ -39,178 +43,213 @@ function draw() {
     }
   }
 */
-  this.sni[0].bod.type = 0; //                                    SOLO PER TEST
-  //print("------");
-  for (const s of this.sni) {
-    s.move();
-    s.display(s.x, s.y);
-    //print(s.x,s.y);
-  }
+    //BOOKMARK: QUI SI FISSA IL TIPO DI BODY
+    this.sni[0].bod.type = 1; //                                    SOLO PER TEST
+    //print("------");
+    for (const s of this.sni) {
+        s.move();
+        s.bod.displayPrincipale(s.x, s.y);
+        s.borders();
+        //print(s.x,s.y);
+    }
 
-  noFill();
-  stroke(0);
-  rect(marg, marg, width - 2 * marg, height - 2 * marg);
+    noFill();
+    stroke(0);
+    rect(marg, marg, width - 2 * marg, height - 2 * marg);
 }
 
 class snip {
 
-  constructor(name, x, y, bod, vel) {
-    this.name = name;
-    this.x = x;
-    this.y = y;
-    this.bod = bod;
-    this.range_ = bod.range_;
-    this.vel = vel;
-    this.onBorders = false;
-  }
-
-  move() {
-    //this.vel.rotate(random(-0.8, 0.8));
-    this.x += this.vel.x;
-    this.y += this.vel.y;
-    this.borders();
-  }
-
-  borders() {
-    let k = 0;
-    this.onBorders = true;
-    if (this.y - this.range_ / 2 < marg) {
-      if (this.y < marg - this.range_ / 2) {
-        this.y = height - marg - this.range_ / 2;
-      }
-      k = 1;
-      this.display(this.x, this.y + (height - 2 * marg));
-    }
-    if (this.y + this.range_ / 2 > height - marg) {
-      if (this.y > height - marg + this.range_ / 2) {
-        this.y = marg + this.range_ / 2;
-      }
-      k += 3;
-      this.display(this.x, this.y - (height - 2 * marg));
-    }
-    if (this.x - this.range_ / 2 < marg) {
-      if (this.x < marg - this.range_ / 2) {
-        this.x = width - marg - this.range_ / 2;
-      }
-      k += 50;
-      this.display(this.x + (width - 2 * marg), this.y);
-    }
-    if (this.x + this.range_ / 2 > width - marg) {
-      if (this.x > width - marg + this.range_ / 2) {
-        this.x = marg + this.range_ / 2;
-      }
-      k += 70;
-      //this.display(this.x - (width - 2 * marg), this.y);
-      this.display(this.x - (width - 2 * marg), this.y);
-    }
-
-    switch (k) {
-      case 71:
-        this.display(this.x - (width - 2 * marg),
-          this.y + (height - 2 * marg));
-        break;
-      case 73:
-        this.display(this.x - (width - 2 * marg), this.y - (height - 2 * marg));
-        break;
-      case 51:
-        this.display(this.x + (width - 2 * marg), this.y + (height - 2 * marg));
-        break;
-      case 53:
-        this.display(this.x + (width - 2 * marg), this.y - (height - 2 * marg));
-        break;
-      default:
+    constructor(name, x, y, bod, vel) {
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.bod = bod;
+        this.range_ = bod.range_;
+        print(this.range_);
+        this.vel = vel;
+        //FIXME: valore iniziale potrebbe anche essere anche true 
         this.onBorders = false;
     }
-  }
 
-  display(x, y) {
-    this.bod.display(x, y, this.onBorders);
-    stroke(1);
-  }
+    move() {
+        this.x += this.vel.x;
+        this.y += this.vel.y;
+        //this.borders();
+    }
+
+    borders() {
+        let k = 0;
+        this.onBorders = true;
+        if (this.y - this.range_ / 2 < marg) {
+            if (this.y < marg - this.range_ / 2) {
+                this.y = height - marg - this.range_ / 2;
+            }
+            k = 1;
+            this.display(this.x, this.y + (height - 2 * marg));
+        }
+        if (this.y + this.range_ / 2 > height - marg) {
+            if (this.y > height - marg + this.range_ / 2) {
+                this.y = marg + this.range_ / 2;
+            }
+            k += 3;
+            this.display(this.x, this.y - (height - 2 * marg));
+        }
+        if (this.x - this.range_ / 2 < marg) {
+            if (this.x < marg - this.range_ / 2) {
+                this.x = width - marg - this.range_ / 2;
+            }
+            k += 50;
+            this.display(this.x + (width - 2 * marg), this.y);
+        }
+        if (this.x + this.range_ / 2 > width - marg) {
+            if (this.x > width - marg + this.range_ / 2) {
+                this.x = marg + this.range_ / 2;
+            }
+            k += 70;
+            //this.display(this.x - (width - 2 * marg), this.y);
+            this.display(this.x - (width - 2 * marg), this.y);
+        }
+        //BOOKMARK: SWITCH K BORDERS 71 73 51 ....
+        switch (k) {
+            case 71:
+                this.display(this.x - (width - 2 * marg),
+                    this.y + (height - 2 * marg));
+                break;
+            case 73:
+                this.display(this.x - (width - 2 * marg), this.y - (height - 2 * marg));
+                break;
+            case 51:
+                this.display(this.x + (width - 2 * marg), this.y + (height - 2 * marg));
+                break;
+            case 53:
+                this.display(this.x + (width - 2 * marg), this.y - (height - 2 * marg));
+                break;
+            default:
+                this.onBorders = false;
+        }
+    }
+
+    display(x, y) {
+        ellipse(x, y, 18, 8);
+        rect(x - this.bod.range_ / 2, y - this.bod.range_ / 2, this.range_);
+        //QUI SNIP CHIAMA this.bod.display
+        //BOOKMARK: QUI  SI PUO' AGGIUNGERE RECT RA
+        this.bod.display(x, y);
+        stroke(1);
+    }
 }
 
 class body {
-  constructor(type) {
-    this.type = type;
-    this.rot = 0;
-    this.r = random(0, 255);
-    this.g = random(0, 255);
-    this.b = random(0, 255);
-    this.set_range_(type);
-    
-  }
-  getType(type) {
-    this.type = type;
-  }
-
-  set_range_(type) {
-    switch (this.type) {
-      case 0:
-        this.range_ = 100;
-      case 1:
-        this.range_ = 100;
-      case 2:
-        this.range_ = 100;
-      default:
-        //
+    constructor(type) {
+        this.type = type;
+        this.r = random(0, 255);
+        this.g = random(0, 255);
+        this.b = random(0, 255);
+        this.set_range_(type);
+        this.rot = 0.8;
     }
-  }
-  display(x, y, onBorders) {
-    //print(this.type);
-    switch (this.type) {
-      case 0:
-        noStroke();
-        push();
-        translate(x, y);
-        //area di visuale dello snip
-        fill(this.r, this.g, this.b, 100);
-        ellipse(0, 0, 100); // this.range_ !!!!!!!!!!
-        //nucleo snip
-        fill(this.b, this.r, this.g, 100);
-        ellipse(0, 0, 16);
-        pop();
-        break;
-      case 1:
-        stroke(this.r, this.g, this.b);
-        this.rot += 0.8;
-        push();
-        //print(onBorders);
-        if (onBorders == false) {
-          //print("------2");
-          translate(x, y);
-          rotate(radians(this.rot));
+    /*getType(type) {
+        this.type = type;
+    }*/
+
+    set_range_(type) {
+        //BOOKMARK: SWITCH set_range_(type) ma non funziona è ininfluente
+        switch (this.type) {
+            case 0:
+                this.range_ = 0;
+            case 1:
+                this.range_ = 92;
+            case 2:
+                this.range_ = 200;
+            default:
+            //
         }
+    }
+    displayPrincipale(x, y) {
+        //print(this.type);
+        //BOOKMARK: SWITCH DISPLAY PER TIPO
+
+        stroke(this.r, this.g, this.b);
+        push();
+        //if (onBorders == false) {
+        //print("------2");
+
+        translate(x, y);
+        this.rot += 0.8;
+        rotate(radians(this.rot));
+        //}
         beginShape();
-        vertex(0 - 32, 60 - 32);
-        vertex(15 - 32, 15 - 32);
-        vertex(60 - 32, 0 - 32);
-        vertex(15 - 32, -15 - 32);
-        vertex(0 - 32, -60 - 32);
-        vertex(-15 - 32, -15 - 32);
-        vertex(-60 - 32, 0 - 32);
-        vertex(-15 - 32, 15 - 32);
+        vertex(-32, 28);
+        vertex(-17, -17);
+        vertex(28, -32);
+        vertex(-17, -47);
+        vertex(-32, -92);
+        vertex(-47, -47);
+        vertex(-92, -32);
+        vertex(-47, -17);
         endShape(CLOSE);
         ellipse(0, 0, 10)
         pop();
-        break;
-      case 2:
-        stroke(1);
-        this.rot += 0.8;
-        push();
-        translate(x, y);
-        rotate(radians(this.rot));
-        beginShape();
-        vertex(20 - 32, 30 - 32);
-        vertex(45 - 32, 25 - 32);
-        vertex(65 - 32, 55 - 32);
-        vertex(35 - 32, 70 - 32);
-        endShape(CLOSE);
-        rect(-50, -50, 100, 100)
-        pop();
-        break;
-      default:
-        print("bad");
-        //console.log(`bad`);
     }
-  }
+
+    display(x, y) {
+        //print(this.type);
+        //BOOKMARK: SWITCH DISPLAY PER TIPO
+        switch (this.type) {
+            case 0:
+                noStroke();
+                push();
+                translate(x, y);
+                //area di visuale dello snip
+                fill(this.r, this.g, this.b, 100);
+                ellipse(0, 0, 100); // this.range_ !!!!!!!!!!
+                //nucleo snip
+                fill(this.b, this.r, this.g, 100);
+                ellipse(0, 0, 16);
+                pop();
+                break;
+            case 1:
+                stroke(this.r, this.g, this.b);
+                push();
+                //if (onBorders == false) {
+                //print("------2");
+
+                translate(x, y);
+                //this.rot += 0.8;
+                rotate(radians(this.rot));
+                //rotate(radians(this.rot));
+                //}
+                beginShape();
+                vertex(-32, 28);
+                vertex(-17, -17);
+                vertex(28, -32);
+                vertex(-17, -47);
+                vertex(-32, -92);
+                vertex(-47, -47);
+                vertex(-92, -32);
+                vertex(-47, -17);
+                endShape(CLOSE);
+                ellipse(0, 0, 10)
+                pop();
+                //}
+                break;
+            case 2:
+                stroke(1);
+                push();
+                translate(x, y);
+                beginShape();
+                vertex(-12, -2);
+                vertex(13, -7);
+                vertex(33, 23);
+                vertex(3, 38);
+                endShape(CLOSE);
+                rect(-50, -50, 100, 100)
+                pop();
+                break;
+            default:
+                print("bad");
+            //console.log(`bad`);
+        }
+    }
 }
