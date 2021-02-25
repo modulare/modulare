@@ -1,5 +1,5 @@
 //ok
-let marg = 50;
+let marg = 100;
 let ini_rnd = 0;
 let end_rnd = 1;
 let orX;
@@ -204,7 +204,6 @@ class body {
                 vertex(-92, -32);
                 vertex(-47, -17);
                 endShape(CLOSE);
-                ellipse(0, 0, 10)
                 pop();
                 //}
                 break;
