@@ -1,18 +1,16 @@
 //ok
 let marg = 100;
-let ini_rnd = 0;
-let end_rnd = 1;
-let orX;
-let orY;
+let num_snip = 25;
+let view_range_body_on_edges = true;
 
 function setup() {
-    createCanvas(1000, 800);
+    createCanvas(800, 800);
     let orX = width / 2;
     let orY = height / 2;
     this.sni = [];
 
-    for (let i = 0; i < 25; i++) {
-        let kind = ceil(random(0, 2))
+    for (let i = 0; i < num_snip; i++) {
+        let kind = 1;
         let vX = random(-1, 1);
         let vY = random(-1, 1);
         let rot = random(-0.8, 0.8);
@@ -23,40 +21,70 @@ function setup() {
 function draw() {
     background(255, 255, 255, 25);
 
-    if (frameCount == 800) {
-        for (let i = 0; i < 8; i++) {
-            this.sni[i].bod.kind = 1;
-            this.sni[i].range_ = this.sni[i].bod.set_range_(1);
-        }
-    }
-
-    if (frameCount == 1300) {
-        //marg = 10;
-        for (let i = 8; i < 16; i++) {
-            this.sni[i].bod.kind = 0;
-            this.sni[i].range_ = this.sni[i].bod.set_range_(0);
-
-        }
-    }
-
-    if (frameCount == 2000) {
-        for (let i = 0; i < 25; i++) {
-            this.sni[i].bod.kind = 2;
-            this.sni[i].range_ = this.sni[i].bod.set_range_(2);
-        }
-    }
-
-
-    for (const s of this.sni) {
-        s.move();
-        s.bod.display(s.x, s.y, s.rot);
-        s.borders();
-    }
+    sequence();
 
     noFill();
     stroke(0);
     rect(marg, marg, width - 2 * marg, height - 2 * marg);
 }
+
+function sequence() {
+
+    if (frameCount == 1) {
+        start_ = 0;
+        end_ = 1;
+        let kind = 1;
+        this.sni[0].bod.kind = kind;
+        this.sni[0].bod.set_range_(kind);
+        this.sni[0].range_ = this.sni[0].bod.range_;
+    }
+    if (frameCount == 400) {
+        start_ = 0;
+        end_ = num_snip;
+        for (let i = start_; i < end_; i++) {
+            let kind = 1;
+            this.sni[i].bod.kind = kind;
+            this.sni[i].bod.set_range_(kind);
+            this.sni[i].range_ = this.sni[i].bod.range_;
+        }
+    }
+
+    if (frameCount == 800) {
+        marg = 10;
+        start_ = 0;
+        end_ = num_snip;
+        for (let i = start_; i < end_; i++) {
+            let kind = ceil(random(-1, 2));
+            this.sni[i].bod.kind = kind;
+            this.sni[i].bod.set_range_(kind);
+            this.sni[i].range_ = this.sni[i].bod.range_;
+        }
+    }
+
+    if (frameCount == 1200) {
+        marg = 0;
+        start_ = 0;
+        end_ = num_snip;
+        for (let i = start_; i < end_; i++) {
+            this.sni[i].bod.kind = 2;
+            this.sni[i].bod.set_range_(2);
+            this.sni[i].range_ = this.sni[i].bod.range_;
+        }
+    }
+
+    draw_snip(start_,end_);
+
+}
+
+function draw_snip(start_,end_) {
+    //draw the snips (on the edge too)
+    for (let i = start_; i < end_; i++) {
+        sni[i].move();
+        sni[i].bod.display(sni[i].x, sni[i].y, sni[i].rot);
+        sni[i].edges();
+    }
+}
+
 
 class snip {
 
@@ -69,6 +97,9 @@ class snip {
         this.bod = bod;
         this.range_ = bod.range_;
         this.vel = vel;
+        //to determine if this.onEdges is true or false 
+        //at the beginning
+        this.edges();
     }
 
     move() {
@@ -77,9 +108,9 @@ class snip {
         this.rot += this.vel_rot;
     }
 
-    borders() {
+    edges() {
         let k = 0;
-        this.onBorders = true;
+        this.onEdges = true;
         if (this.y - this.range_ / 2 < marg) {
             if (this.y < marg - this.range_ / 2) {
                 this.y = height - marg - this.range_ / 2;
@@ -126,18 +157,21 @@ class snip {
                 this.displayRange(this.x + (width - 2 * marg), this.y + (height - 2 * marg));
                 break;
             case 53:
-                this.bod.display(this.x + (width - 2 * marg), this.y - (height - 2 * marg), this.rot);
+                this.bod.display(this.x + (width - 2 * marg), this.y - (height - 2 * marg), this.rot)
                 this.displayRange(this.x + (width - 2 * marg), this.y - (height - 2 * marg));
                 break;
             default:
-                this.onBorders = false;
+                this.onEdges = false;
         }
     }
 
     displayRange(x, y) {
-        ellipse(x, y, 8);
-        rect(x - this.bod.range_ / 2, y - this.bod.range_ / 2, this.range_);
-        stroke(1);
+        if (view_range_body_on_edges == true) {
+            line(x - 6, y, x + 6, y);
+            line(x, y - 6, x, y + 6);
+            rect(x - this.bod.range_ / 2, y - this.bod.range_ / 2, this.range_);
+            stroke(0);
+        }
     }
 }
 
@@ -152,12 +186,13 @@ class body {
     }
 
     set_range_(kind) {
+        //consider the size (encumbrance) of the body in a complete rotation
         switch (kind) {
             case 0:
                 this.range_ = 100;
                 break;
             case 1:
-                this.range_ = 92;
+                this.range_ = 200;
                 break;
             case 2:
                 this.range_ = 141;
@@ -174,10 +209,11 @@ class body {
                 push();
                 translate(x, y);
                 fill(this.r, this.g, this.b, 100);
-                ellipse(0, 0, 100); 
+                ellipse(0, 0, 100);
                 fill(this.b, this.r, this.g, 100);
                 ellipse(0, 0, 16);
                 pop();
+                stroke(0);
                 break;
             case 1:
                 stroke(this.r, this.g, this.b);
