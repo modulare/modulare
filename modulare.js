@@ -33,6 +33,9 @@ function sequence() {
     if (frameCount == 1) {
         //single body (of first snip) to show the quadruplication of body on the corner borders
         //with draw the range of rotation and maximum margin out of the borders
+        fill(0);
+        rect(0,0,width,height);
+        noFill();
         marg = 150;
         start_ = 0;
         end_ = 1;
@@ -277,5 +280,3 @@ class body {
         }
     }
 }
-
-
