@@ -1,10 +1,10 @@
-//ok
 let marg = 100;
 let num_snip = 25;
-let view_range_body_on_edges = true;
+let view_range_body_on_borders = true;
+let transparency = 25;
 
 function setup() {
-    createCanvas(650, 650);
+    createCanvas(760, 760);
     let orX = width / 2;
     let orY = height / 2;
     this.sni = [];
@@ -19,7 +19,7 @@ function setup() {
 }
 
 function draw() {
-    background(255, 255, 255, 25);
+    background(255, 255, 255, transparency);
 
     sequence();
 
@@ -29,14 +29,14 @@ function draw() {
 }
 
 function sequence() {
-
+ 
     if (frameCount == 1) {
-        //single body (of first snip) to show the quadruplication of body on the corner edges
-        //with draw the range of rotation and maximum margin out of the edges
+        //single body (of first snip) to show the quadruplication of body on the corner borders
+        //with draw the range of rotation and maximum margin out of the borders
         marg = 150;
         start_ = 0;
         end_ = 1;
-        view_range_body_on_edges = true;
+        view_range_body_on_borders = true;
 
         let kind = 1;
         this.sni[0].bod.kind = kind;
@@ -47,16 +47,16 @@ function sequence() {
         this.sni[0].vel.y = 1;
     }
 
-    if (frameCount == 500) {
-        //change direction to show the duplication of body on the opposite edges
+    if (frameCount == 300) {
+        //change direction to show the duplication of body on the opposite borders
         this.sni[0].vel.x = 0.5;
         this.sni[0].vel.y = 1.5;
     }
 
-    if (frameCount == 1500) {
+    if (frameCount == 1000) {
         //"explosion" of all kinds of bodies with the range of rotation
-        //reduction of the margin out of the edges
-        marg = 20;
+        //reduction of the margin out of the borders
+        marg = 60;
         start_ = 0;
         end_ = num_snip;
         //reset the first snip
@@ -72,13 +72,17 @@ function sequence() {
         }
     }
 
-    if (frameCount == 2000) {
+    if (frameCount == 1800) {
         //without draw the range of rotation
-        view_range_body_on_edges = false;
+        view_range_body_on_borders = false;
     }
 
     if (frameCount == 2500) {
         //only one kind whithout margin
+        fill(0);
+        rect(0,0,width,height);
+        noFill();
+        transparency = 5;
         marg = 0;
         start_ = 0;
         end_ = num_snip;
@@ -99,11 +103,11 @@ function sequence() {
 }
 
 function draw_snip(start_, end_) {
-    //draw the snips (on the edge too)
+    //draw the snips (on the borders too)
     for (let i = start_; i < end_; i++) {
         sni[i].move();
         sni[i].bod.display(sni[i].x, sni[i].y, sni[i].rot);
-        sni[i].edges();
+        sni[i].borders();
     }
 }
 
@@ -118,9 +122,9 @@ class snip {
         this.bod = bod;
         this.range_ = bod.range_;
         this.vel = vel;
-        //to determine if this.onEdges is true or false 
+        //to determine if this.onBorders is true or false 
         //at the beginning
-        this.edges();
+        this.borders();
     }
 
     move() {
@@ -129,9 +133,10 @@ class snip {
         this.rot += this.vel_rot;
     }
 
-    edges() {
+    borders() {
+        //duplicate or quadruplicate the body that cross the borders
         let k = 0;
-        this.onEdges = true;
+        this.onBorders = true;
         if (this.y - this.range_ / 2 < marg) {
             if (this.y < marg - this.range_ / 2) {
                 this.y = height - marg - this.range_ / 2;
@@ -182,12 +187,13 @@ class snip {
                 this.displayRange(this.x + (width - 2 * marg), this.y - (height - 2 * marg));
                 break;
             default:
-                this.onEdges = false;
+                this.onBorders = false;
         }
     }
 
     displayRange(x, y) {
-        if (view_range_body_on_edges == true) {
+        if (view_range_body_on_borders == true) {
+            stroke(255,0,0);
             line(x - 6, y, x + 6, y);
             line(x, y - 6, x, y + 6);
             rect(x - this.bod.range_ / 2, y - this.bod.range_ / 2, this.range_);
